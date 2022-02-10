@@ -570,6 +570,46 @@ class PhpNamespaceIndex(Index):
 
         return content, collapse
 
+class PhpObjectsIndex(Index):
+    """
+    Index subclass to provide the Php module index.
+    """
+
+    name = 'objectsindex'
+    localname = _('PHP Objects Index')
+    shortname = _('objects')
+
+    def generate(self, docnames=None):
+        content = {}
+        # list of all objects, sorted by object name
+        objects = sorted(self.domain.data['objects'].items(),
+                         key=lambda item: item[0].lower())
+        # sort out collapsable modules
+        prev_objectname = ''
+        num_toplevels = 0
+        for objectname, (docname, objecttype) in objects:
+            if docnames and docname not in docnames:
+                continue
+            entries = content.setdefault(objectname[0].lower(), [])
+            entries.append([
+                objectname,  # name
+                '',          # subtype
+                docname,     # docname
+                objectname,  # anchor
+                objecttype,  # extra
+                'q',          # qualifier
+                '',          # description
+                ])
+            prev_objectname = objectname
+
+        # apply heuristics when to collapse at page load:
+        # only collapse if ...
+        collapse = False
+        # sort by first letter
+        content = sorted(content.items())
+
+        return content, collapse
+
 
 class PhpDomain(Domain):
     """PHP language domain."""
@@ -624,6 +664,7 @@ class PhpDomain(Domain):
     }
     indices = [
         PhpNamespaceIndex,
+        PhpObjectsIndex,
     ]
 
     def clear_doc(self, docname):
