@@ -597,7 +597,7 @@ class PhpObjectsIndex(Index):
                 docname,     # docname
                 objectname,  # anchor
                 objecttype,  # extra
-                'q',          # qualifier
+                '',          # qualifier
                 '',          # description
                 ])
             prev_objectname = objectname
